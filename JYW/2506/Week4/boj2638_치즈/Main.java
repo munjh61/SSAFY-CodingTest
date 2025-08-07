@@ -1,0 +1,92 @@
+package boj2638_치즈;
+
+import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+public class Main {
+	
+	static int[][] map;
+	static int N,M,total;
+	static int[] dr = {-1,1,0,0};
+	static int[] dc = {0,0,-1,1};
+	static boolean[][] visited;
+	static int[][] melt;
+	
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		
+		String line = br.readLine();
+		StringTokenizer st = new StringTokenizer(line);
+		
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		
+		map = new int[N][M];
+		total = 0;
+		
+		for(int i=0; i<N; i++) {
+			line = br.readLine();
+			st = new StringTokenizer(line);
+			for(int j=0; j<M; j++) {
+				map[i][j] = Integer.parseInt(st.nextToken());
+			}
+		}
+		
+		int ans = 0;
+		while(true) {
+			visited = new boolean[N][M];
+			melt = new int[N][M];
+			bfs(0,0);
+			
+			boolean flag = false;
+			for(int i=0; i<N; i++) {
+				for(int j=0; j<M; j++) {
+					if(map[i][j]==1 && melt[i][j]>=2) {
+						map[i][j] = 0; //치즈 녹음
+						flag = true;
+					}
+				}
+			}
+			if(!flag) break;
+			ans++;
+		}
+		
+		bw.write(String.valueOf(ans));
+		bw.flush();
+	}
+	
+	static void bfs(int r, int c) {
+		Queue<Point> q = new LinkedList<>();
+		q.add(new Point(r, c));
+		visited[r][c] = true;
+		
+		while(!q.isEmpty()) {
+			Point current = q.poll();
+			int x = current.x;
+			int y = current.y;
+			
+			for(int i=0; i<4; i++) {
+				int nr = x + dr[i];
+				int nc = y + dc[i];
+				
+				if(nr>=N || nc>=M || nr<0 || nc<0 || visited[nr][nc]) continue;
+				
+				if(map[nr][nc] == 0) {
+					visited[nr][nc] = true;
+					q.offer(new Point(nr, nc));		
+				}else if(map[nr][nc] == 1) {
+					melt[nr][nc]++;
+				}
+			}
+		}
+	}
+	
+}
